@@ -1,4 +1,5 @@
 module.exports = {
+    preset: "@shelf/jest-mongodb",
     globals: {
         "ts-jest": {
             tsconfig: "tsconfig.json"

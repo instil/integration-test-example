@@ -17,7 +17,7 @@ html(lang='')
     .row
       each is_me in folks_who_are_me
         .col-sm-6
-          h2=is_me.name
+          h2(id=`name-${is_me.name}`)=is_me.name
           button.btn.btn-outline-secondary(class='remove-me' id=`remove-me-${is_me.name}`, data-name=is_me.name, type='button') Remove
     hr
     div.input-group.mb-3.w-50.mx-auto
