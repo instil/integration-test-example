@@ -1,22 +1,16 @@
-# TypeScript Node Starter
+# Integration Test Example
 
-The main purpose of this repository is to show a working Node.js API Server + front-end project and workflow for writing Node code in TypeScript.
+The main purpose of this repository is to show a working Node.js API Server + front-end project + MongoDB web server using Typescript with integration tests for each of those components.
 
-It is not a goal to be a comprehensive and definitive guide to making a TypeScript and Node project, but as a working reference maintained by the community. If you are interested in starting a new TypeScript project - check out the bootstrapping tools reference in [the TypeScript Website](https://www.typescriptlang.org/docs/home.html)
+Based off [TypeScript-Node-Starter](https://github.com/microsoft/TypeScript-Node-Starter)
 
-
-[![Dependency Status](https://david-dm.org/Microsoft/TypeScript-Node-Starter.svg)](https://david-dm.org/Microsoft/TypeScript-Node-Starter) [![Build Status](https://travis-ci.org/Microsoft/TypeScript-Node-Starter.svg?branch=master)](https://travis-ci.org/Microsoft/TypeScript-Node-Starter)
-
-![image](https://user-images.githubusercontent.com/820883/36764267-abbdb7f8-1be0-11e8-9678-2a9ea448d7f8.png)
+![image](https://github.com/rory-instil/integration-test-example/blob/main/ui-example.png?raw=true)
 
 
 # Table of contents:
 
 - [Pre-reqs](#pre-reqs)
 - [Getting started](#getting-started)
-- [Deploying the app](#deploying-the-app)
-	- [Pre-reqs](#Prerequisites)
-	- [Deploying to Azure App Service](#deploying-to-azure-app-service)
 - [TypeScript + Node](#typescript--node)
 	- [Getting TypeScript](#getting-typescript)
 	- [Project Structure](#project-structure)
@@ -28,7 +22,6 @@ It is not a goal to be a comprehensive and definitive guide to making a TypeScri
 - [Dependencies](#dependencies)
 	- [`dependencies`](#dependencies)
 	- [`devDependencies`](#devdependencies)
-- [Hackathon Starter Project](#hackathon-starter-project)
 
 # Pre-reqs
 To build and run this app locally you will need a few things:
@@ -39,7 +32,7 @@ To build and run this app locally you will need a few things:
 # Getting started
 - Clone the repository
 ```
-git clone --depth=1 https://github.com/Microsoft/TypeScript-Node-Starter.git <project_name>
+git clone https://github.com/rory-instil/integration-test-example
 ```
 - Install dependencies
 ```
@@ -48,21 +41,10 @@ npm install
 ```
 - Configure your mongoDB server
 ```bash
-# create the db directory
-sudo mkdir -p /data/db
-# give the db correct read/write permissions
-sudo chmod 777 /data/db
-
-# starting from macOS 10.15 even the admin cannot create directory at root
-# so lets create the db directory under the home directory.
 mkdir -p ~/data/db
-# user account has automatically read and write permissions for ~/data/db.
 ```
-- Start your mongoDB server (you'll probably want another command prompt)
+- Once `~/data/db` directory is created then you can run mongodb
 ```bash
-mongod
-
-# on macOS 10.15 or above the db directory is under home directory
 mongod --dbpath ~/data/db
 ```
 - Build and run the project
@@ -76,110 +58,6 @@ Or, if you're using VS Code, you can use `cmd + shift + b` to run the default bu
 Throughout the README We will try to call out specific places where VS Code really shines or where this project has been set up to take advantage of specific features.
 
 Finally, navigate to `http://localhost:3000` and you should see the template being served and rendered locally!
-
-# Deploying the app
-There are many ways to deploy a Node app, and in general, nothing about the deployment process changes because you're using TypeScript.
-In this section, I'll walk you through how to deploy this app to Azure App Service using the extensions available in VS Code because I think it is the easiest and fastest way to get started, as well as the most friendly workflow from a developer's perspective.
-
-## Prerequisites
-- [**Azure account**](https://azure.microsoft.com/en-us/free/) - If you don't have one, you can sign up for free.
-The Azure free tier gives you plenty of resources to play around with including up to 10 App Service instances, which is what we will be using.
-- [**VS Code**](https://code.visualstudio.com/) - We'll be using the interface provided by VS Code to quickly deploy our app.
-- [**Azure App Service VS Code extension**](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice) - In VS Code, search for `Azure App Service` in the extension marketplace (5th button down on the far left menu bar), install the extension, and then reload VS Code.
-- **Create a cloud database** -
-For local development, running MongoDB on localhost is fine, however once we deploy we need a database with high availability.
-The easiest way to achieve this is by using a managed cloud database.
-There are many different providers, but the easiest one to get started with is [MongoDB Atlas](#create-a-managed-mongodb-with-atlas).
-- **SendGrid Account** -
-If you don't have one, you can sign up for free, we will need it to send emails. There are many different providers that Nodemailer supports ([Well-known services](https://nodemailer.com/smtp/well-known/)), we'll be using [SendGrid](#sendgrid-account).
-
-### Create a managed MongoDB with Atlas
-1. Navigate to [MongoDB's website](https://www.mongodb.com/cloud/atlas), sign up for a free account, and then log in.
-2. After creating the account, enter the organization name, project name, and select your preferred language (JavaScript).
-3. Select the **Shared Cluster** to get a free version with up to 512 MB storage which is great for development purposes.
-4. On the "Create a Starter Cluster" page you can select cloud provider, region, region, cluster tier, and
-MongoDB settings, like version and backup frequency (Note: there is no option to create backups in the free tier).
-5. If you already know to which cloud provider and region you want to deploy later, you should select the same here for best performance. Otherwise select a region close to the location where you plan to deploy the application later.
-6. Select **M0 Sandbox** as the Cluster Tier, give your cluster a name, and then click the "Create Cluster" button.
-7. It will now take a couple of minutes to create the cluster and you will be redirected to the MongoDB Atlas Admin interface.
-8. Now you must configure access and security before you can use the database.
-9. To whitelist an IP address, go to the **Network Access** section and click the "Add IP Address" button. For local development you can select your current IP address.
-10. Create a user by selecting the **Add New Database User** in Database Access, adding a username and password (Password Authentication method) and give him read and write access to any database within the cluster.
-A user account is required to connect to the database, so remember these values because you will need them as part of your connection string.
-11. Within the Clusters section, click the **Connect** button in your cluster to connect to the database.
-12. You could now connect to the cluster using [MongoDB Compass](https://www.mongodb.com/products/compass), which is a graphical interface (GUI) to interact with the database.
-13. But we need to select **Connect your application** to get the connection string, it should look like this: `mongodb+srv://<username>:<password>@your-cluster.12abc.mongodb.net/your-database?retryWrites=true&w=majority`
-and replace `<username>` and `<password>` with the credentials you just created.
-Back in your project, open your `.env` file and update `MONGODB_URI` with your new connection string.
-    > NOTE! - If you don't have an `.env` file yet, rename `.env.example` to `.env` and follow the comments to update the values in that file.
-14. **Success!**
-You can test that it works locally by updating `MONGODB_URI_LOCAL` to the same connection string you just updated in `MONGO_URI`.
-After rebuilding/serving, the app should work, but users that were previously created in local testing will not exist in the new database!
-Don't forget to return the `MONGO_URI_LOCAL` to your local test database (if you so desire).
-
-You can find **more information** about how to get started with Atlas [here](https://docs.atlas.mongodb.com/getting-started/).
-
-### SendGrid Account
-1. Navigate to [SendGrid's Website](https://sendgrid.com/), sign up for a free account, and complete the verification process.
-2. Open your `.env` file and update `SENDGRID_USERNAME` and `SENDGRID_PASSWORD` with your SendGrid username and password respectively.
-
-## Deploying to Azure App Service
-Deploying from VS Code can be broken into the following steps:
-1. Authenticate your Azure account in VS Code
-2. Build your app
-3. Zip deploy using the Azure App Service extension
-
-### Sign in to your Azure account
-1. Open VS Code
-2. Expand the Azure App Service menu in the explorer menu
-    - If you don't see this, you might not have the `Azure App Service` extension installed.
-    See the pre-reqs section.
-3. Click `Sign in to Azure...`
-4. Choose `Copy & Open` from the resulting dialog
-    - This will open `aka.ms/devicelogin` in a browser window.
-    If it doesn't, just navigate there manually.
-5. Paste in the code that is on your clipboard.
-6. Go back to VS Code, you should now be signed in.
-You can confirm that everything worked by seeing your Azure subscription listed in the Azure App Service section of the explorer window.
-Additionally, you should see the email associated with your account listed in the status bar at the bottom of VS Code.
-
-### Build the app
-Building the app locally is required to generate a zip to deploy because the App Service won't execute build tasks.
-Build the app however you normally would:
-- `ctrl + shift + b` - kicks off default build in VS Code
-- execute `npm run build` from a terminal window
-
-### Zip deploy from VS Code
-1. Make sure your app is built, whatever is currently in your `dist` and `node_modules` folders will be the app that is deployed.
-2. Click the blue up arrow (Deploy to Web App) on the Azure App Service section of the explorer window.
-3. Choose the entire project directory.
-If you haven't changed the name, this will be `TypeScript-Node-Starter`.
-4. Choose the subscription you want this app to be billed to (don't worry, it will be free).
-5. Choose `Create New Web App`
-6. Enter a globally unique name -
-This will be part of the URL that azure generates, so it has to be unique, but if you're planning on adding a custom domain later, it's not that important. I usually just add random numbers to the end of the app name, ie. typescript-node-starter-15121214.
-7. Choose a resource group -
-If you don't know what this is, just create a new one.
-If you have lots of cloud resources that should be logically grouped together (think an app service, and a database that supports that app) then you would want to put them in the same resource group.
-This can always be updated later though.
-If you create a new resource group, you'll also be prompted to pick a location for that group.
-Pick something geographically close to where your users are.
-8. Choose `Create new App Service Plan` -
-An app service plan mainly is what determines the size and cost of the hardware your app will run on, but it also manages some other settings which we can ignore for now.
-9. Choose `B1 - Basic` - This one is free.
-If you know what you're doing, feel free to select a stronger pricing tier.
-10. Choose your target node runtime version - We are deploying to Linux machines, and in addition we can choose the exact node runtime we want.
-If you don't know what you want, choose whatever the current LTS build is.
-11. Grab a cup of coffee - You'll see everything you just selected getting created in the output window.
-All of this is powered by the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/overview?view=azure-cli-latest) and can be easily replicated if you decide you want to customize this process.
-This deployment is not the fastest option (but it is the easiest!). We are literally bundling everything in your project (including the massive node_modules folder) and uploading it to our Azure app service. Times will vary, but as a baseline, my deployment took roughly 6 minutes.
-12. Add `NODE_ENV` environment variable - In the App Service section of the explorer window, expand the newly created service, right click on **Application Settings**, select **Add New Settings...**, and add `NODE_ENV` as the key and `production` as the value.
-This setting determines which database to point to.
-If you haven't created a cloud database yet, see [the setup instructions](#Create a managed MongoDB with MongoLab).
-13. Profit!
-
-### Troubleshooting failed deployments
-Deployment can fail for various reasons, if you get stuck with a page that says *Service Unavailable* or some other error, [open an issue](https://github.com/Microsoft/TypeScript-Node-Starter/issues/new) and I'll try to help you resolve the problems.
 
 # TypeScript + Node
 In the next few sections I will call out everything that changes when adding TypeScript to an Express project.
@@ -204,30 +82,25 @@ The full folder structure of this app is explained below:
 
 > **Note!** Make sure you have already built the app using `npm run build`
 
-| Name | Description |
-| ------------------------ | --------------------------------------------------------------------------------------------- |
-| **.vscode**              | Contains VS Code specific settings                                                            |
-| **.github**              | Contains GitHub settings and configurations, including the GitHub Actions workflows            |
-| **dist**                 | Contains the distributable (or output) from your TypeScript build. This is the code you ship  |
-| **node_modules**         | Contains all your npm dependencies                                                            |
-| **src**                  | Contains your source code that will be compiled to the dist dir                               |
-| **src/config**           | Passport authentication strategies and login middleware. Add other complex config code here   |
-| **src/controllers**      | Controllers define functions that respond to various http requests                            |
-| **src/models**           | Models define Mongoose schemas that will be used in storing and retrieving data from MongoDB  |
-| **src/public**           | Static assets that will be used client side                                                   |
-| **src/types**            | Holds .d.ts files not found on DefinitelyTyped. Covered more in this [section](#type-definition-dts-files)          |
-| **src**/server.ts        | Entry point to your express app                                                               |
-| **test**                 | Contains your tests. Separate from source because there is a different build process.         |
-| **views**                | Views define how your app renders on the client. In this case we're using pug                 |
-| .env.example             | API keys, tokens, passwords, database URI. Clone this, but don't check it in to public repos. |
-| .travis.yml              | Used to configure Travis CI build                                                             |
-| .copyStaticAssets.ts     | Build script that copies images, fonts, and JS libs to the dist folder                        |
-| jest.config.js           | Used to configure Jest running tests written in TypeScript                                    |
-| package.json             | File that contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)                          |
-| tsconfig.json            | Config settings for compiling server code written in TypeScript                               |
-| tsconfig.tests.json      | Config settings for compiling tests written in TypeScript                                     |
-| .eslintrc                | Config settings for ESLint code style checking                                                |
-| .eslintignore            | Config settings for paths to exclude from linting                                             |
+| Name                       | Description                                                                                                |
+|----------------------------|------------------------------------------------------------------------------------------------------------|
+| **.vscode**                | Contains VS Code specific settings                                                                         |
+| **.github**                | Contains GitHub settings and configurations, including the GitHub Actions workflows                        |
+| **dist**                   | Contains the distributable (or output) from your TypeScript build. This is the code you ship               |
+| **node_modules**           | Contains all your npm dependencies                                                                         |
+| **src**                    | Contains your source code that will be compiled to the dist dir                                            |
+| **src/isme**               | Is me module                                                                                               |
+| **src/app.ts**             | Entry point to your express app                                                                            |
+| **test**                   | Contains playwright spec tests                                                                             |
+| **views**                  | Views define how your app renders on the client. In this case we're using pug                              |
+| .env                       | Contains mongodb environment data for localhost - also where you would store production environment data   |
+| .copyStaticAssets.ts       | Build script that copies images, fonts, and JS libs to the dist folder                                     |
+| jest.config.js             | Used to configure Jest running tests written in TypeScript                                                 |
+| jest.config.integration.js | Integration jest config                                                                                    |
+| package.json               | File that contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped) |
+| tsconfig.json              | Config settings for compiling server code written in TypeScript                                            |
+| .eslintrc                  | Config settings for ESLint code style checking                                                             |
+| .eslintignore              | Config settings for paths to exclude from linting                                                          |
 
 ## Building the project
 It is rare for JavaScript projects not to have some kind of build pipeline these days, however Node projects typically have the least amount of build configuration.
@@ -406,7 +279,7 @@ The best part of source maps is when configured correctly, you don't even know t
 #### Configuring source maps
 First you need to make sure your `tsconfig.json` has source map generation enabled:
 ```json
-"compilerOptions" {
+"compilerOptions": {
     "sourceMap": true
 }
 ```
@@ -416,6 +289,11 @@ This `.map.js` file provides the information necessary to map back to the source
 > **Note!** - It is also possible to generate "inline" source maps using `"inlineSourceMap": true`.
 This is more common when writing client side code because some bundlers need inline source maps to preserve the mapping through the bundle.
 Because we are writing Node.js code, we don't have to worry about this.
+
+### Using the debugger in Intellij
+Simply open a test file (i.e. `./src/app.itest.ts`) and click the run button beside a test, or right click the file and select run.
+![image](https://github.com/rory-instil/integration-test-example/blob/main/run-test-example.png?raw=true)
+You can also debug tests this way
 
 ### Using the debugger in VS Code
 Debugging is one of the places where VS Code really shines over other editors.
@@ -569,25 +447,13 @@ In that file you'll find two sections:
 | Package                         | Description                                                           |
 | ------------------------------- | --------------------------------------------------------------------- |
 | async                           | Utility library that provides asynchronous control flow.               |
-| bcrypt-nodejs                   | Library for hashing and salting user passwords.                       |
 | bluebird                        | Promise library                                                       |
 | body-parser                     | Express 4 middleware.                                                 |
-| compression                     | Express 4 middleware.                                                 |
-| connect-mongo                   | MongoDB session store for Express.                                    |
 | dotenv                          | Loads environment variables from .env file.                            |
 | errorhandler                    | Express 4 middleware.                                                 |
 | express                         | Node.js web framework.                                                |
-| express-flash                    | Provides flash messages for Express.                                   |
-| express-session                 | Express 4 middleware.                                                 |
-| express-validator               | Easy form validation for Express.                                     |
-| fbgraph                         | Facebook Graph API library.                                           |
 | lodash                          | General utility library.                                              |
-| lusca                           | CSRF middleware.                                                      |
 | mongoose                        | MongoDB ODM.                                                          |
-| nodemailer                      | Node.js library for sending emails.                                   |
-| passport                        | Simple and elegant authentication library for node.js                 |
-| passport-facebook               | Sign-in with Facebook plugin.                                         |
-| passport-local                  | Sign-in with Username and Password plugin.                            |
 | pug (jade)                      | Template engine for Express.                                          |
 | request                         | Simplified HTTP request library.                                       |
 | request-promise                 | Promisified HTTP request library. Let's us use async/await             |
@@ -610,10 +476,3 @@ In that file you'll find two sections:
 | typescript                      | JavaScript compiler/type checker that boosts JavaScript productivity   |
 
 To install or update these dependencies you can use `npm install` or `npm update`.
-
-# Hackathon Starter Project
-A majority of this quick start's content was inspired or adapted from Sahat's excellent [Hackathon Starter project](https://github.com/sahat/hackathon-starter).
-
-## License
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the [MIT](LICENSE) License.
