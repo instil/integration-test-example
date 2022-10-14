@@ -59,7 +59,47 @@ Throughout the README We will try to call out specific places where VS Code real
 
 Finally, navigate to `http://localhost:3000` and you should see the template being served and rendered locally!
 
-# TypeScript + Node
+# The examples
+## UI testing
+The ui is built using a simple [template library](https://en.wikipedia.org/wiki/Web_template_system) called [pug](https://pugjs.org/api/getting-started.html)
+We primarily use React, but this gives an idea of testing against other UI frameworks.
+
+The UI testing uses [playwright](https://playwright.dev/) which is similar to the industry standard [selenium](https://www.selenium.dev/) but written for JS/TS specifically.
+If you're familiar with selenium then this will feel very similar, if not then it's useful to know!
+This tests against the entire application from the UI to the database.
+
+They can't be run with intellij (unless you pay for a plugin that enables this) but only from the command line
+
+`npx playwright test`
+
+or
+
+`npx playwright test --debug`
+to use [playwright's debugger](https://playwright.dev/docs/debug)
+
+`src/tests/home.spec.ts`
+
+## Database testing
+The database is monogodb spun up with [mongod](https://www.mongodb.com/docs/manual/reference/program/mongod/) 
+
+It tests against the database layer directly with a live database - handling the setup and tear down
+
+`src/isme/database.itest.ts`
+
+## Rest testing
+Testing against the rest layer is useful for identifying that you have:
+- validation
+- accept the expected models
+- produce the expected outputs
+
+For our rest testing we are mocking out the database / service layer to just focus on the rest layer in isolation.
+The database layer is covered by other tests.
+
+We are using [supertest](https://github.com/visionmedia/supertest) for this which provides a nice api to test against apis
+
+`src/app.itest.ts`
+
+# TypeScript + Node (This is copied from the starter-project so read if interested)
 In the next few sections I will call out everything that changes when adding TypeScript to an Express project.
 Note that all of this has already been set up for this project, but feel free to use this as a reference for converting other Node.js projects to TypeScript.
 
